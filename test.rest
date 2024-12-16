@@ -1,0 +1,4 @@
+
+### GET /health_check
+
+GET http://localhost:8080/health_check
