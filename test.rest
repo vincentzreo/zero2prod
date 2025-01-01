@@ -9,4 +9,4 @@ GET http://localhost:8000/health_check
 POST http://localhost:8000/subscriptions
 Content-Type: application/x-www-form-urlencoded
 
-name=John212+Doe&email=john2122.doe@example.com
+name=John212+Doe&email=john212222.doe@example.com
