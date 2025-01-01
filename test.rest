@@ -1,4 +1,12 @@
 
 ### GET /health_check
 
-GET http://localhost:8080/health_check
+GET http://localhost:8000/health_check
+
+
+### POST /subscriptions
+
+POST http://localhost:8000/subscriptions
+Content-Type: application/x-www-form-urlencoded
+
+name=John212+Doe&email=john2122.doe@example.com
