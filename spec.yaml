@@ -17,21 +17,21 @@ services:
     routes:
       - path: /
     envs:
-      - key: APP_DATABASE_USERNAME
+      - key: APP_DATABASE__USERNAME
         scope: RUN_TIME
         value: ${newsletter.USERNAME}
-      - key: APP_DATABASE_PASSWORD
+      - key: APP_DATABASE__PASSWORD
         scope: RUN_TIME
         value: ${newsletter.PASSWORD}
-      - key: APP_DATABASE_HOST
+      - key: APP_DATABASE__HOST
         scope: RUN_TIME
-        value: ${newsletter.HOST}
-      - key: APP_DATABASE_PORT
+        value: ${newsletter.HOSTNAME}
+      - key: APP_DATABASE__PORT
         scope: RUN_TIME
         value: ${newsletter.PORT}
-      - key: APP_DATABASE_NAME
+      - key: APP_DATABASE__DATABASE_NAME
         scope: RUN_TIME
-        value: ${newsletter.DATABASE_NAME}
+        value: ${newsletter.DATABASE}
 databases:
   - engine: PG
     name: newsletter
