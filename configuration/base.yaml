@@ -7,3 +7,8 @@ database:
   host: "localhost"
   port: 5431
   database_name: "newsletter"
+email_client:
+  base_url: "localhost"
+  sender_email: "newsletter@example.com"
+  authorization_token: "my-secret-token"
+  timeout_milliseconds: 10000

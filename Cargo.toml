@@ -12,6 +12,7 @@ name = "zero2prod"
 
 [dependencies]
 actix-web = "4"
+anyhow = "1.0.95"
 chrono = { version = "0.4.39", default-features = false, features = ["clock"] }
 claims = "0.8.0"
 config = "0.14.1"
@@ -33,11 +34,18 @@ unicode-segmentation = "1.12.0"
 uuid = { version = "1.11.0", features = ["v4"] }
 validator = "0.20.0"
 
+[dependencies.reqwest]
+version = "0.12"
+default-features = false
+features = ["json", "rustls-tls"]
+
 [dev-dependencies]
 quickcheck = "1.0.3"
 quickcheck_macros = "1.0.0"
 rand = "0.8.0"
-reqwest = "0.12.9"
+serde_json = "1.0.138"
+tokio = { version = "1", features = ["rt", "macros"] }
+wiremock = "0.6.2"
 
 [dependencies.sqlx]
 version = "0.8.0"
