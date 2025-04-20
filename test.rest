@@ -14,12 +14,13 @@ name=John212+Doe&email=john212222.doe@example.com
 
 ### digital ocean
 
-GET https://zero2prod-7u7ow.ondigitalocean.app/health_check
+GET https://zero2prod-och9u.ondigitalocean.app/health_check
+
 
 
 ### post
 
-POST https://zero2prod-7u7ow.ondigitalocean.app/subscriptions
+POST https://zero2prod-och9u.ondigitalocean.app/subscriptions
 Content-Type: application/x-www-form-urlencoded
 
 name=le%20guin&email=john2222.doe@example.com

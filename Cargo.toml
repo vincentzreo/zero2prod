@@ -18,6 +18,8 @@ claims = "0.8.0"
 config = "0.14.1"
 env_logger = "0.11.6"
 fake = { version = "3.1.0", features = ["rand_core"] }
+linkify = "0.10.0"
+rand = { version = "0.8", features = ["std_rng"] }
 secrecy = { version = "0.10.3", features = ["serde"] }
 serde = { version = "1.0.215", features = ["derive"] }
 serde-aux = "4.5.0"
@@ -42,7 +44,7 @@ features = ["json", "rustls-tls"]
 [dev-dependencies]
 quickcheck = "1.0.3"
 quickcheck_macros = "1.0.0"
-rand = "0.8.0"
+
 serde_json = "1.0.138"
 tokio = { version = "1", features = ["rt", "macros"] }
 wiremock = "0.6.2"

@@ -1,6 +1,7 @@
 use sqlx::{Connection, Executor, PgConnection, PgPool};
 use std::sync::LazyLock;
 use uuid::Uuid;
+use wiremock::MockServer;
 use zero2prod::{
     config::{get_configuration, DatabaseSettings},
     startup::{get_connection_pool, Application},
@@ -22,6 +23,13 @@ static TRACING: LazyLock<()> = LazyLock::new(|| {
 pub struct TestApp {
     pub address: String,
     pub db_pool: PgPool,
+    pub email_server: MockServer,
+    pub port: u16,
+}
+
+pub struct ConfirmationLinks {
+    pub html: reqwest::Url,
+    pub plain_text: reqwest::Url,
 }
 
 impl TestApp {
@@ -34,10 +42,34 @@ impl TestApp {
             .await
             .expect("Failed to execute request.")
     }
+
+    pub async fn get_confirmation_links(
+        &self,
+        email_request: &wiremock::Request,
+    ) -> ConfirmationLinks {
+        let body: serde_json::Value = serde_json::from_slice(&email_request.body).unwrap();
+        let get_link = |s: &str| {
+            let links = linkify::LinkFinder::new()
+                .links(s)
+                .filter(|l| *l.kind() == linkify::LinkKind::Url)
+                .collect::<Vec<_>>();
+            assert_eq!(links.len(), 1);
+            let raw_link = links[0].as_str().to_owned();
+            let mut confirmation_link = reqwest::Url::parse(&raw_link).unwrap();
+            assert_eq!(confirmation_link.host_str(), Some("127.0.0.1"));
+            confirmation_link.set_port(Some(self.port)).unwrap();
+            confirmation_link
+        };
+        let html = get_link(&body["HtmlBody"].as_str().unwrap());
+        let plain_text = get_link(&body["TextBody"].as_str().unwrap());
+        ConfirmationLinks { html, plain_text }
+    }
 }
 // Launch our app in a separate thread for testing
 pub async fn spawn_app() -> TestApp {
     LazyLock::force(&TRACING);
+
+    let email_server = MockServer::start().await;
 
     // Randomise configuration to eunsure test isolaction
     let configuration = {
@@ -45,6 +77,7 @@ pub async fn spawn_app() -> TestApp {
         // Use a different database for each test case
         c.database.database_name = Uuid::new_v4().to_string();
         c.application.port = 0;
+        c.email_client.base_url = email_server.uri();
         c
     };
     configure_database(&configuration.database).await;
@@ -52,11 +85,14 @@ pub async fn spawn_app() -> TestApp {
         .await
         .expect("Failed to build application");
     let address = format!("http://127.0.0.1:{}", application.port());
+    let port = application.port();
     let _ = tokio::spawn(application.run_until_stopped());
 
     TestApp {
         address,
         db_pool: get_connection_pool(&configuration.database),
+        email_server,
+        port,
     }
 }
 
