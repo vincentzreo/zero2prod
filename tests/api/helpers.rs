@@ -65,6 +65,14 @@ impl TestApp {
         ConfirmationLinks { html, plain_text }
     }
 }
+
+impl Drop for TestApp {
+    fn drop(&mut self) {
+        // 确保在测试结束时关闭数据库连接
+        let _ = self.db_pool.close();
+    }
+}
+
 // Launch our app in a separate thread for testing
 pub async fn spawn_app() -> TestApp {
     LazyLock::force(&TRACING);

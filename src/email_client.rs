@@ -31,8 +31,11 @@ impl EmailClient {
         subject: &str,
         html_content: &str,
         text_content: &str,
-    ) -> anyhow::Result<()> {
-        let url = reqwest::Url::parse(&self.base_url)?.join("email")?;
+    ) -> Result<(), reqwest::Error> {
+        let url = reqwest::Url::parse(&self.base_url)
+            .unwrap()
+            .join("email")
+            .unwrap();
         let request_body = SendEmailRequest {
             from: self.sender.as_ref(),
             to: recipient.as_ref(),
