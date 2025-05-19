@@ -3,6 +3,12 @@ use validator::ValidateEmail;
 #[derive(Debug)]
 pub struct SubscriberEmail(String);
 
+impl std::fmt::Display for SubscriberEmail {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
 impl SubscriberEmail {
     pub fn parse(s: String) -> Result<Self, String> {
         if s.validate_email() {

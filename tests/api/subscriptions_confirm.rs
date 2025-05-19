@@ -34,7 +34,7 @@ async fn the_link_returned_by_subscribe_returns_a_200_status_code() {
     app.post_subscriptions(body.into()).await;
 
     let email_request = &app.email_server.received_requests().await.unwrap()[0];
-    let confirmation_links = app.get_confirmation_links(email_request).await;
+    let confirmation_links = app.get_confirmation_links(email_request);
 
     // Act
     let response = reqwest::get(confirmation_links.html).await.unwrap();
@@ -58,7 +58,7 @@ async fn clicking_the_confirmation_link_confirms_a_subscriber() {
     app.post_subscriptions(body.into()).await;
 
     let email_request = &app.email_server.received_requests().await.unwrap()[0];
-    let confirmation_links = app.get_confirmation_links(email_request).await;
+    let confirmation_links = app.get_confirmation_links(email_request);
 
     // Act
     reqwest::get(confirmation_links.html)
