@@ -38,7 +38,7 @@ pub async fn login(
     tracing::Span::current().record("username", tracing::field::display(&creditials.username));
     match validate_credentials(creditials, &pool).await {
         Ok(user_id) => {
-            tracing::Span::current().record("user_id", &tracing::field::display(&user_id));
+            tracing::Span::current().record("user_id", tracing::field::display(&user_id));
             Ok(HttpResponse::SeeOther()
                 .insert_header((LOCATION, "/"))
                 .finish())
