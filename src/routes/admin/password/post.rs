@@ -1,7 +1,8 @@
-use actix_web::{web, HttpResponse};
+use actix_web::{error::InternalError, web, HttpResponse};
 use actix_web_flash_messages::FlashMessage;
 use secrecy::{ExposeSecret, SecretString};
 use sqlx::PgPool;
+use uuid::Uuid;
 
 use crate::{
     authentication::{validate_credentials, AuthError, Credentials},
@@ -23,10 +24,7 @@ pub async fn change_password(
     pool: web::Data<PgPool>,
 ) -> Result<HttpResponse, actix_web::Error> {
     // Handle password change logic here
-    let user_id = match session.get_user_id().map_err(e500)? {
-        Some(id) => id,
-        None => return Ok(see_other("/login")),
-    };
+    let user_id = reject_anonymous_users(session).await?;
     if form.new_password.expose_secret() != form.new_password_check.expose_secret() {
         FlashMessage::error("You entered two different new passwords the field values must match.")
             .send();
@@ -50,5 +48,20 @@ pub async fn change_password(
             AuthError::UnexpectedError(_) => Err(e500(e)),
         };
     }
-    todo!()
+    crate::authentication::change_password(user_id, form.0.new_password, &pool)
+        .await
+        .map_err(e500)?;
+    FlashMessage::success("Your password has been changed.").send();
+    Ok(see_other("/admin/password"))
+}
+
+async fn reject_anonymous_users(session: TypedSession) -> Result<Uuid, actix_web::Error> {
+    match session.get_user_id().map_err(e500)? {
+        Some(id) => Ok(id),
+        None => {
+            let response = see_other("/login");
+            let e = anyhow::anyhow!("The user has not logged in");
+            Err(InternalError::from_response(e, response).into())
+        }
+    }
 }
